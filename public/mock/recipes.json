@@ -1,0 +1,38 @@
+[
+  {
+    "id": 0,
+    "name": "Soma Yukihira",
+    "email": "testemail@gmail.com",
+    "title": "Time Fuse Mapo Curry Noodles",
+    "description": "This dish was created by Sōma during the Moon Banquet Festival to combat against Kuga Terunori in sales. This dish is comprised of three parts: curry, meatball, and mapo tofu. The soup is made from beef bones, several curry spices, garlic, and ginger to make the curry dish. The soup is then mixed in gelatin which has been wrapped with the meatballs Sōma uses for his Hujiao Bing.",
+    "ingredients": "Sinigang, Miso",
+    "instructions": "Cook sinigang, cook miso",
+    "date": "October 01",
+    "image": "",
+    "isFavorite": true
+  },
+  {
+    "id": 1,
+    "name": "Cloud Cam",
+    "email": "testemail@gmail.com",
+    "title": "Sinigang sa Salmon",
+    "description": "Sinigang na Salmon sa Miso is my favorite version of fish sinigang. It has that comforting sour taste of sinigang which was made better by the savory taste of miso. That is just the tip of the iceberg though, metaphorically speaking. The salmon heads are the main stars of the dish. It is delicious and very tasty. It also contains fish oil thatis said to be good for the heart.",
+    "ingredients": "Sinigang, Miso",
+    "instructions": "Cook sinigang, cook miso",
+    "date": "October 01",
+    "image": "",
+    "isFavorite": false
+  },
+  {
+    "id": 2,
+    "name": "Eishi Tsukasa",
+    "email": "testemail@gmail.com",
+    "title": "Venison Roast Showing Two Expressions",
+    "description": "A dish made by Eishi when he was challenged by Sōma. This French dish consists of roast made of venison backstrap which was seasoned with salt, pepper, venison fat & tendons. Using venison stock, he skillfully transforms it into a sauce poivrade by just adding pepper. But, for the left side, he adds blueberries, red currants, blackberries, creme de cassis, red wine, blueberry vinegar, and raspberry jam to turn it into a sauce poivrade au baie. With Eishi's care of the ingredients, the flavors of this dish are excessively harmonic & tranquil.",
+    "ingredients": "Venison, Berries",
+    "instructions": "Using venison stock, he skillfully transforms it into a sauce poivrade by just adding pepper. But, for the left side, he adds blueberries, red currants, blackberries, creme de cassis, red wine, blueberry vinegar, and raspberry jam to turn it into a sauce poivrade au baie. With Eishi's care of the ingredients, the flavors of this dish are excessively harmonic & tranquil.",
+    "date": "October 01",
+    "image": "",
+    "isFavorite": false
+  }
+]

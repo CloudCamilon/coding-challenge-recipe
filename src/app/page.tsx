@@ -1,6 +1,5 @@
 "use client";
 
-import { ThemeProvider } from "@emotion/react";
 /**
  * Code by Cloud Camilon.
  * Reuse as a whole or in part is prohibited without permission.
@@ -8,15 +7,14 @@ import { ThemeProvider } from "@emotion/react";
  * authors: @vcamilon
  */
 
-import Header from "./components/Header";
 import { secBankTheme } from "@/styles/theme";
 import HomeContent from "./home/home";
+import { ThemeProvider } from "@emotion/react";
 
 export default function Home() {
   return (
     <div className="grid font-[family-name:var(--font-geist-sans)] bg-[#EBEBEB] text-black w-screen h-screen">
       <ThemeProvider theme={secBankTheme}>
-        <Header />
         <HomeContent />
       </ThemeProvider>
     </div>

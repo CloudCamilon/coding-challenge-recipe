@@ -7,3 +7,6 @@
 
 export * from "./search";
 export * from "./add";
+export * from "./star";
+export * from "./star-hollow";
+export * from "./check";

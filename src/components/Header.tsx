@@ -13,7 +13,7 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import InputBase from "@mui/material/InputBase";
-import { SearchIcon } from "../../../public/icons";
+import { SearchIcon } from "../../public/icons";
 
 const Search = styled("div")(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -47,10 +47,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Header() {
   return (
-    <AppBar
-      position="sticky"
-      sx={{ paddingTop: "30px", paddingBottom: "21px" }}
-    >
+    <AppBar position="sticky" sx={{ paddingTop: "30px", height: "96px" }}>
       <Toolbar sx={{ justifyContent: "flex-end" }}>
         <Search>
           <StyledInputBase

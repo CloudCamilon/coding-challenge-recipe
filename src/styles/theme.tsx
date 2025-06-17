@@ -13,6 +13,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const secBankTheme = createTheme({
   typography: {
     fontFamily: inter.style.fontFamily,
+    button: {
+      textTransform: "none",
+    },
   },
   palette: {
     background: { default: "#EBEBEB" },
