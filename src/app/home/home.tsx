@@ -25,6 +25,7 @@ export default function HomeContent(): JSX.Element {
   const [filterFavorites, setFilterFavorites] = useState<
     "YES" | "NO" | undefined
   >(undefined);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleFilterFavoritesChange = (value: "YES" | "NO" | undefined) => {
     setFilterFavorites(value);
@@ -33,14 +34,17 @@ export default function HomeContent(): JSX.Element {
   const filteredAndSortedRecipes = useMemo(() => {
     let result = [...recipes];
 
-    // 🔁 Filter by favorites
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((r) => r.title.toLowerCase().includes(query));
+    }
+
     if (filterFavorites === "YES") {
       result = result.filter((r) => r.isFavorite);
     } else if (filterFavorites === "NO") {
       result = result.filter((r) => !r.isFavorite);
     }
 
-    // 🔁 Sort by title
     if (sortValue === "ASC") {
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortValue === "DESC") {
@@ -48,7 +52,11 @@ export default function HomeContent(): JSX.Element {
     }
 
     return result;
-  }, [recipes, sortValue, filterFavorites]);
+  }, [recipes, sortValue, filterFavorites, searchQuery]);
+
+  useEffect(() => {
+    console.log(recipes);
+  }, []);
 
   useEffect(() => {
     if (recipes.length === 0) {
@@ -60,9 +68,13 @@ export default function HomeContent(): JSX.Element {
     setSortValue(newOrder);
   };
 
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <Box>
-      <Header />
+      <Header onSearchChange={handleSearchChange} />
       {status === "loading" || status === "failed" ? (
         <></>
       ) : (

@@ -11,7 +11,13 @@ import { JSX, useRef, useState } from "react";
 import Image from "next/image";
 import { Box } from "@mui/material";
 
-export default function AddRecipeImage(): JSX.Element {
+export default function AddRecipeImage({
+  register,
+  name,
+}: {
+  register: any;
+  name: string;
+}): JSX.Element {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
 
@@ -26,7 +32,9 @@ export default function AddRecipeImage(): JSX.Element {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target?.result as string);
+        const result = e.target?.result as string;
+        setImage(result);
+        register(name).onChange({ target: { value: result, name: name } });
       };
       reader.readAsDataURL(file);
     }

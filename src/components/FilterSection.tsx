@@ -5,7 +5,7 @@
  * authors: @vcamilon
  */
 
-import { SortingType, TFilter, TFilterFavoritesType } from "@/models/home";
+import { SortingType, TFilterFavoritesType } from "@/models/home";
 import {
   Box,
   Checkbox,
@@ -42,10 +42,8 @@ export default function FilterSection({
       const isChecked = event.target.checked;
 
       if (!isChecked) {
-        // If unchecked, set both to undefined
         onFilterFavoritesChange(undefined);
       } else {
-        // If checked, only allow YES or NO
         onFilterFavoritesChange(selected);
       }
     };

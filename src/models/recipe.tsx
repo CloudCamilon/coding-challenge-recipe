@@ -20,9 +20,6 @@ export type TRecipe = {
   isFavorite?: boolean;
 };
 
-export type TAddRecipeFormSubmit = Omit<
-  TRecipe,
-  "id" | "date" | "image" | "isFavorite"
->;
+export type TAddRecipeFormSubmit = Omit<TRecipe, "id" | "date" | "isFavorite">;
 
 export type AddRecipeFulfilledAction = ReturnType<typeof addRecipe.fulfilled>;

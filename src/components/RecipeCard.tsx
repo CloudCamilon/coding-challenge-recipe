@@ -82,10 +82,13 @@ export default function RecipeCard({
           }}
         >
           <Image
-            src={"/images/curry.png"}
+            style={{
+              borderRadius: 15,
+              objectFit: "fill",
+            }}
+            src={recipeCardData.image ?? "/images/placeholder.png"}
             alt={"Recipe Image"}
             fill
-            style={{ objectFit: "fill" }}
           />
           <Box
             sx={{

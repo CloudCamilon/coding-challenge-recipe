@@ -72,6 +72,7 @@ export default function AddRecipePage({}: {}): JSX.Element {
   }, [dispatch]);
 
   const onSubmit = async (formData: TAddRecipeFormSubmit) => {
+    console.log(formData.image);
     if (recipeData) {
       const updatedRecipe = {
         ...formData,
@@ -85,26 +86,46 @@ export default function AddRecipePage({}: {}): JSX.Element {
         console.error(err);
       }
     } else {
-      const recipeToSave = {
-        ...formData,
-        date: new Date().toISOString(),
-        image: `/images/${formData.title
-          .toLowerCase()
-          .replace(/\s+/g, "-")}.jpg`,
-        isFavorite: false,
-      };
+      const { title, image, ...rest } = formData;
 
       try {
-        await dispatch(addRecipe(recipeToSave)).unwrap(); // ✅ Will throw if rejected
-        alert("✅ Recipe added!");
+        const response = await fetch("/api/save-image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, imageData: image }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          setError("image", {
+            type: "manual",
+            message: "Failed to save image",
+          });
+          return;
+        }
+
+        const recipeToSave = {
+          ...rest,
+          title,
+          image: result.path,
+          date: new Date().toISOString(),
+          isFavorite: false,
+        };
+
+        await dispatch(addRecipe(recipeToSave)).unwrap();
+        alert(" Recipe added!");
       } catch (err: any) {
+        console.log(err);
         if (err === "A recipe with that title already exists.") {
           setError("title", {
             type: "manual",
             message: err,
           });
         } else {
-          alert("❌ Failed to save recipe");
+          alert(" Failed to save recipe");
         }
       }
     }
@@ -159,8 +180,11 @@ export default function AddRecipePage({}: {}): JSX.Element {
                 height: { lg: "401px", xs: "250px" },
               }}
             >
-              <AddRecipeImage />
+              <AddRecipeImage register={register} name="image" />
             </Box>
+            {errors.image && (
+              <Typography color="error">Image is required</Typography>
+            )}
           </Box>
           <Box
             component="form"
