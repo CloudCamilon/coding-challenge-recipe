@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearNavigationData } from "@/store/navigationSlice";
 import Link from "next/link";
 import { TAddRecipeFormSubmit, TRecipe } from "@/models/recipe";
-import { addRecipe } from "@/store/recipeSlice";
+import { addRecipe, deleteRecipe, updateRecipe } from "@/store/recipeSlice";
 import { AppDispatch } from "@/store/store";
 
 export default function AddRecipePage({}: {}): JSX.Element {
@@ -32,6 +32,7 @@ export default function AddRecipePage({}: {}): JSX.Element {
     register,
     handleSubmit,
     formState: { errors, isSubmitted },
+    setError,
   } = useForm<RecipeFormInputs>({
     resolver: zodResolver(RecipeFormSchema),
     mode: "onSubmit",
@@ -46,22 +47,6 @@ export default function AddRecipePage({}: {}): JSX.Element {
   });
 
   const dispatch = useDispatch<AppDispatch>();
-
-  const onSubmit = async (formData: TAddRecipeFormSubmit) => {
-    const recipeToSave = {
-      ...formData,
-      date: new Date().toISOString(),
-      image: `/images/${formData.title.toLowerCase().replace(/\s+/g, "-")}.jpg`,
-      isFavorite: false,
-    };
-
-    try {
-      await dispatch(addRecipe(recipeToSave));
-      alert("✅ Recipe added!");
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const [recipeData, setRecipeData] = useState<TRecipe | undefined>(undefined);
 
@@ -85,6 +70,54 @@ export default function AddRecipePage({}: {}): JSX.Element {
       dispatch(clearNavigationData());
     };
   }, [dispatch]);
+
+  const onSubmit = async (formData: TAddRecipeFormSubmit) => {
+    if (recipeData) {
+      const updatedRecipe = {
+        ...formData,
+        id: recipeData.id,
+      };
+
+      try {
+        await dispatch(updateRecipe(updatedRecipe));
+        alert("✅ Recipe updated!");
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      const recipeToSave = {
+        ...formData,
+        date: new Date().toISOString(),
+        image: `/images/${formData.title
+          .toLowerCase()
+          .replace(/\s+/g, "-")}.jpg`,
+        isFavorite: false,
+      };
+
+      try {
+        await dispatch(addRecipe(recipeToSave)).unwrap(); // ✅ Will throw if rejected
+        alert("✅ Recipe added!");
+      } catch (err: any) {
+        if (err === "A recipe with that title already exists.") {
+          setError("title", {
+            type: "manual",
+            message: err,
+          });
+        } else {
+          alert("❌ Failed to save recipe");
+        }
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteRecipe(recipeData?.id ?? -1));
+      alert("✅ Recipe deleted!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <ThemeProvider theme={secBankTheme}>
@@ -198,7 +231,7 @@ export default function AddRecipePage({}: {}): JSX.Element {
             >
               {recipeData ? (
                 <Button
-                  type="submit"
+                  onClick={handleDelete}
                   sx={{ width: "160px", backgroundColor: "#EE6400" }}
                   variant="contained"
                 >

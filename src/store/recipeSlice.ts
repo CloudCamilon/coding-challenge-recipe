@@ -8,8 +8,6 @@
 import { AddRecipeFulfilledAction, TRecipe } from "@/models/recipe";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-
-// Async thunk to load recipes from JSON
 const fetchRecipes = createAsyncThunk<TRecipe[]>(
   "recipes/fetchRecipes",
   async () => {
@@ -19,7 +17,6 @@ const fetchRecipes = createAsyncThunk<TRecipe[]>(
   }
 );
 
-// Fake API function
 const fakeApiSaveRecipe = async (
   recipeData: Omit<TRecipe, "id">,
   currentRecipes: TRecipe[]
@@ -31,24 +28,57 @@ const fakeApiSaveRecipe = async (
   };
 };
 
-// Thunk
 const addRecipe = createAsyncThunk<
   TRecipe,
   Omit<TRecipe, "id">,
-  { state: RootState }
+  { state: RootState; rejectValue: string }
 >("recipes/addRecipe", async (recipeData, { getState, rejectWithValue }) => {
   try {
     const state = getState();
-    const currentRecipes = state.recipes.recipes;
+    const existingRecipe = state.recipes.recipes.find(
+      (r) => r.title.toLowerCase() === recipeData.title.toLowerCase()
+    );
 
-    // Simulate saving to backend
-    const newRecipe = await fakeApiSaveRecipe(recipeData, currentRecipes);
+    if (existingRecipe) {
+      return rejectWithValue("A recipe with that title already exists.");
+    }
+
+    const newRecipe = await fakeApiSaveRecipe(
+      recipeData,
+      state.recipes.recipes
+    );
 
     return newRecipe;
   } catch (error) {
     return rejectWithValue("Something went wrong");
   }
 });
+
+const updateRecipe = createAsyncThunk<TRecipe, TRecipe, { state: RootState }>(
+  "recipes/updateRecipe",
+  async (updatedRecipe, { getState }) => {
+    const state = getState();
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return updatedRecipe;
+  }
+);
+
+const deleteRecipe = createAsyncThunk<number, number, { state: RootState }>(
+  "recipes/deleteRecipe",
+  async (recipeId, { getState, rejectWithValue }) => {
+    const state = getState();
+    const recipeExists = state.recipes.recipes.some((r) => r.id === recipeId);
+
+    if (!recipeExists) {
+      return rejectWithValue("Recipe not found");
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return recipeId;
+  }
+);
 
 interface RecipeState {
   recipes: TRecipe[];
@@ -100,11 +130,42 @@ const recipeSlice = createSlice({
       )
       .addCase(addRecipe.rejected, (state, action) => {
         state.status = "failed";
-        state.error = (action.payload as string) || "Failed to add recipe";
+        state.error = action.payload || "Recipe title must be unique.";
+      })
+      .addCase(updateRecipe.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateRecipe.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const index = state.recipes.findIndex(
+          (r) => r.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.recipes[index] = action.payload;
+        }
+      })
+      .addCase(updateRecipe.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to update recipe";
+      })
+      .addCase(deleteRecipe.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteRecipe.fulfilled, (state, action) => {
+        const recipeId = action.payload;
+
+        state.status = "succeeded";
+        state.recipes = state.recipes.filter(
+          (recipe) => recipe.id !== recipeId
+        );
+      })
+      .addCase(deleteRecipe.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to delete recipe";
       });
   },
 });
 
-export { fetchRecipes, addRecipe };
+export { fetchRecipes, addRecipe, updateRecipe, deleteRecipe };
 export const { toggleFavorite } = recipeSlice.actions;
 export default recipeSlice.reducer;

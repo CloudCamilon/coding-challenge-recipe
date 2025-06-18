@@ -5,7 +5,7 @@
  * authors: @vcamilon
  */
 
-import { TFilter } from "@/models/home";
+import { SortingType, TFilter, TFilterFavoritesType } from "@/models/home";
 import {
   Box,
   Checkbox,
@@ -15,22 +15,40 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Typography,
 } from "@mui/material";
 import { JSX, useState } from "react";
+import { SelectChangeEvent } from "@mui/material/Select";
 
-export default function FilterSection(): JSX.Element {
-  const [filter, setFilter] = useState<TFilter>({});
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setFilter((filter) => {
-      return {
-        ...filter,
-        sortOrderAsc: event.target.value,
-      };
-    });
+export default function FilterSection({
+  sortValue,
+  onSortChange,
+  filterFavorites,
+  onFilterFavoritesChange,
+}: {
+  sortValue: SortingType;
+  onSortChange: (order: SortingType) => void;
+  filterFavorites: TFilterFavoritesType;
+  onFilterFavoritesChange: (value: "YES" | "NO" | undefined) => void;
+}): JSX.Element {
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value as "ASC" | "DESC" | "";
+    onSortChange(value ? (value as "ASC" | "DESC") : undefined);
   };
+
+  const handleFavoriteCheck =
+    (selected: "YES" | "NO") =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const isChecked = event.target.checked;
+
+      if (!isChecked) {
+        // If unchecked, set both to undefined
+        onFilterFavoritesChange(undefined);
+      } else {
+        // If checked, only allow YES or NO
+        onFilterFavoritesChange(selected);
+      }
+    };
 
   return (
     <Box
@@ -60,7 +78,7 @@ export default function FilterSection(): JSX.Element {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={filter.sortOrderAsc?.toString()}
+            value={sortValue || ""}
             label="Select"
             onChange={handleChange}
           >
@@ -73,70 +91,46 @@ export default function FilterSection(): JSX.Element {
         id="home-recipe-filter-favorites"
         sx={{ marginTop: { xs: 1, sm: 7 } }}
       >
-        <Typography
-          sx={{
-            fontSize: { xs: "16px", sm: "21px" },
-          }}
-          fontWeight={600}
-          marginBottom={2}
-        >
+        <Typography fontWeight={600} marginBottom={2}>
           Filter
         </Typography>
         <Box
-          id="home-recipe-filter-favorites-area"
           sx={{
             borderWidth: 1,
-            height: { xs: "100%", sm: "182px" },
+            borderColor: "divider",
             paddingX: { xs: 1, sm: 3 },
             paddingY: { xs: 1, sm: 4 },
             borderRadius: 1,
           }}
         >
-          <Typography
-            sx={{
-              fontSize: "16px",
-              marginBottom: { xs: 0, sm: 2 },
-            }}
-            fontWeight={600}
-          >
+          <Typography fontWeight={600} fontSize={"16px"} marginBottom={1}>
             Favorites?
           </Typography>
-          <FormControl
-            component="fieldset"
-            sx={{ marginLeft: { xs: 0, sm: 4 } }}
-          >
-            <FormGroup
-              aria-label="position"
-              sx={{
-                display: "flex",
-                flexDirection: {
-                  xs: "row",
-                  sm: "column",
-                },
-              }}
-            >
-              <FormControlLabel
-                value="end"
-                control={<Checkbox />}
-                label={
-                  <Typography fontSize={"16px"} color="textSecondary">
-                    Yes
-                  </Typography>
-                }
-                labelPlacement="end"
-              />
-              <FormControlLabel
-                value="end"
-                control={<Checkbox />}
-                label={
-                  <Typography fontSize={"16px"} color="textSecondary">
-                    No
-                  </Typography>
-                }
-                labelPlacement="end"
-              />
-            </FormGroup>
-          </FormControl>
+          <FormGroup row sx={{ gap: 1 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filterFavorites === "YES"}
+                  onChange={handleFavoriteCheck("YES")}
+                  name="favorites-yes"
+                />
+              }
+              label="Yes"
+              labelPlacement="end"
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filterFavorites === "NO"}
+                  onChange={handleFavoriteCheck("NO")}
+                  name="favorites-no"
+                />
+              }
+              label="No"
+              labelPlacement="end"
+            />
+          </FormGroup>
         </Box>
       </Box>
     </Box>

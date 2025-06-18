@@ -7,10 +7,9 @@
 
 import { TRecipe } from "./recipe";
 
-export enum SortingType {
-  "ASC",
-  "DESC",
-}
+export type SortingType = "ASC" | "DESC" | undefined;
+
+export type TFilterFavoritesType = "YES" | "NO" | undefined;
 
 export type TRecipeCard = {
   key?: number;

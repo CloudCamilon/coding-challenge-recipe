@@ -8,7 +8,7 @@
 "use client";
 
 import { Box } from "@mui/material";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import FilterSection from "@/components/FilterSection";
 import { RecipeList } from "@/components/RecipeList";
 import Header from "@/components/Header";
@@ -19,11 +19,46 @@ import type { AppDispatch } from "@/store/store";
 export default function HomeContent(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { recipes, status, error } = useSelector((state: any) => state.recipes);
+  const [sortValue, setSortValue] = useState<"ASC" | "DESC" | undefined>(
+    undefined
+  );
+  const [filterFavorites, setFilterFavorites] = useState<
+    "YES" | "NO" | undefined
+  >(undefined);
+
+  const handleFilterFavoritesChange = (value: "YES" | "NO" | undefined) => {
+    setFilterFavorites(value);
+  };
+
+  const filteredAndSortedRecipes = useMemo(() => {
+    let result = [...recipes];
+
+    // 🔁 Filter by favorites
+    if (filterFavorites === "YES") {
+      result = result.filter((r) => r.isFavorite);
+    } else if (filterFavorites === "NO") {
+      result = result.filter((r) => !r.isFavorite);
+    }
+
+    // 🔁 Sort by title
+    if (sortValue === "ASC") {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortValue === "DESC") {
+      result.sort((a, b) => b.title.localeCompare(a.title));
+    }
+
+    return result;
+  }, [recipes, sortValue, filterFavorites]);
+
   useEffect(() => {
     if (recipes.length === 0) {
       dispatch(fetchRecipes());
     }
   }, [dispatch, recipes.length]);
+
+  const handleSortChange = (newOrder: "ASC" | "DESC" | undefined) => {
+    setSortValue(newOrder);
+  };
 
   return (
     <Box>
@@ -39,8 +74,13 @@ export default function HomeContent(): JSX.Element {
             flexDirection: { sm: "row", xs: "column" },
           }}
         >
-          <FilterSection />
-          <RecipeList recipeList={recipes} />
+          <FilterSection
+            sortValue={sortValue}
+            filterFavorites={filterFavorites}
+            onSortChange={handleSortChange}
+            onFilterFavoritesChange={handleFilterFavoritesChange}
+          />
+          <RecipeList recipeList={filteredAndSortedRecipes} />
         </Box>
       )}
     </Box>

@@ -1,4 +1,17 @@
+- Code by Cloud Camilon.
+- Reuse as a whole or in part is prohibited without permission.
+- Coding Challenge for Security Bank Philippines
+- authors: @vcamilon
+
+# Recipe System
+
+This is a recipe management system created with Next.js
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Repository overview
+
+This project is primarly patterned inside the src/app folder for all of the pages. Reusable components, models, and stores, can be found on their respective folders in this structure. (e.g. src/components, src/models, src/store, etc.)
 
 ## Getting Started
 
