@@ -10,24 +10,10 @@
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import InputBase from "@mui/material/InputBase";
 import { SearchIcon } from "../../public/icons";
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import { useDebounce } from "@/hooks/useDebounce";
 
 const Search = styled("div")(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -65,9 +51,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 type HeaderProps = {
   onSearchChange?: (query: string) => void;
+  isSearchEnabled?: boolean;
 };
 
-export default function Header({ onSearchChange }: HeaderProps) {
+export default function Header({
+  onSearchChange,
+  isSearchEnabled,
+}: HeaderProps) {
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const debouncedQuery = useDebounce(searchQuery, 300);
 
@@ -79,19 +69,21 @@ export default function Header({ onSearchChange }: HeaderProps) {
 
   return (
     <AppBar position="sticky" sx={{ paddingTop: "30px", height: "96px" }}>
-      <Toolbar sx={{ justifyContent: "flex-end" }}>
-        <Search>
-          <StyledInputBase
-            placeholder="Search here…"
-            inputProps={{ "aria-label": "search" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-        </Search>
-      </Toolbar>
+      {isSearchEnabled ? (
+        <Toolbar sx={{ justifyContent: "flex-end" }}>
+          <Search>
+            <StyledInputBase
+              placeholder="Search here…"
+              inputProps={{ "aria-label": "search" }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+          </Search>
+        </Toolbar>
+      ) : undefined}
     </AppBar>
   );
 }

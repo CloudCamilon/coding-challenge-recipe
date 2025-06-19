@@ -16,9 +16,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchRecipes } from "@/store/recipeSlice";
 import type { AppDispatch } from "@/store/store";
 
+/**
+ * This function serves as the functional component
+ * for the Home Recipe page. UI component that houses
+ * functionalaties like sorting, display, search, etc
+ *
+ * @returns {JSX.Element} Returns home page.
+ */
 export default function HomeContent(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const { recipes, status, error } = useSelector((state: any) => state.recipes);
+  const { recipes, status } = useSelector((state: any) => state.recipes);
   const [sortValue, setSortValue] = useState<"ASC" | "DESC" | undefined>(
     undefined
   );
@@ -74,13 +81,13 @@ export default function HomeContent(): JSX.Element {
 
   return (
     <Box>
-      <Header onSearchChange={handleSearchChange} />
+      <Header onSearchChange={handleSearchChange} isSearchEnabled={true} />
       {status === "loading" || status === "failed" ? (
         <></>
       ) : (
         <Box
           sx={{
-            paddingTop: "49px",
+            paddingTop: { xs: "10px", md: "49px" },
             maxHeight: "100%",
             display: "flex",
             flexDirection: { sm: "row", xs: "column" },

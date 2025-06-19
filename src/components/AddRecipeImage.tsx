@@ -7,19 +7,27 @@
 
 "use client";
 
-import { JSX, useRef, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Box } from "@mui/material";
 
 export default function AddRecipeImage({
   register,
   name,
+  imageSrc,
 }: {
   register: any;
   name: string;
+  imageSrc?: string;
 }): JSX.Element {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (imageSrc) {
+      setImage(imageSrc);
+    }
+  }, [imageSrc]);
 
   const handleImageClick = () => {
     if (fileInputRef.current) {

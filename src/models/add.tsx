@@ -17,3 +17,9 @@ export type TAddRecipeForm = {
 export interface AddRecipeFormTextArea extends TAddRecipeForm {
   rows: number;
 }
+
+export type TToast = {
+  showToast: boolean;
+  toastContent: string;
+  isError: boolean;
+};

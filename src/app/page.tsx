@@ -11,6 +11,11 @@ import { secBankTheme } from "@/styles/theme";
 import HomeContent from "./home/home";
 import { ThemeProvider } from "@emotion/react";
 
+/**
+ * Page app and starting point of application.
+ * Hosts the Theme Provider and Home Content as
+ * landing page.
+ */
 export default function Home() {
   return (
     <div className="grid font-[family-name:var(--font-geist-sans)] bg-[#EBEBEB] text-black w-screen h-screen">

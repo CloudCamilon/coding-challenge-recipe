@@ -36,7 +36,7 @@ const addRecipe = createAsyncThunk<
   try {
     const state = getState();
     const existingRecipe = state.recipes.recipes.find(
-      (r) => r.title.toLowerCase() === recipeData.title.toLowerCase()
+      (recipe) => recipe.title.toLowerCase() === recipeData.title.toLowerCase()
     );
 
     if (existingRecipe) {
@@ -68,7 +68,9 @@ const deleteRecipe = createAsyncThunk<number, number, { state: RootState }>(
   "recipes/deleteRecipe",
   async (recipeId, { getState, rejectWithValue }) => {
     const state = getState();
-    const recipeExists = state.recipes.recipes.some((r) => r.id === recipeId);
+    const recipeExists = state.recipes.recipes.some(
+      (recipe) => recipe.id === recipeId
+    );
 
     if (!recipeExists) {
       return rejectWithValue("Recipe not found");
@@ -138,7 +140,7 @@ const recipeSlice = createSlice({
       .addCase(updateRecipe.fulfilled, (state, action) => {
         state.status = "succeeded";
         const index = state.recipes.findIndex(
-          (r) => r.id === action.payload.id
+          (recipe) => recipe.id === action.payload.id
         );
         if (index !== -1) {
           state.recipes[index] = action.payload;

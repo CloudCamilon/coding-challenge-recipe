@@ -17,7 +17,7 @@ export function RecipeList({
 }: {
   recipeList: TRecipe[];
 }): JSX.Element {
-  const hasRecords = true;
+  const hasRecords = recipeList.length ? true : false;
 
   return (
     <Box

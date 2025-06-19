@@ -10,6 +10,12 @@ import { join } from "path";
 
 import { NextRequest } from "next/server";
 
+/**
+ * POST mock API call for local saving of image.
+ *
+ * @param {NextRequest} parameterName - Next request type for creation of image.
+ * @throws {Response} Response with error 500 of 400 for handling image processing.
+ */
 export async function POST(req: NextRequest) {
   const formData = await req.json();
 

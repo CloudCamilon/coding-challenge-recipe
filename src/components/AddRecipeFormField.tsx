@@ -55,13 +55,11 @@ export function AddRecipeFormFieldText({
           input: {
             endAdornment: (
               <InputAdornment position="end">
-                {/* Error icon */}
                 {isSubmitted && error && (
                   <CancelIcon
-                    sx={{ color: "#d32f2f", width: 12, height: 12 }}
+                    sx={{ color: "#d32f2f", width: 15, height: 15 }}
                   />
                 )}
-                {/* Success icon */}
                 {isSubmitted && !error && <CheckIcon />}
               </InputAdornment>
             ),
@@ -114,13 +112,11 @@ export function AddRecipeFormFieldTextArea({
           input: {
             endAdornment: (
               <InputAdornment position="end">
-                {/* Error icon */}
                 {isSubmitted && error && (
                   <CancelIcon
-                    sx={{ color: "#d32f2f", width: 12, height: 12 }}
+                    sx={{ color: "#d32f2f", width: 15, height: 15 }}
                   />
                 )}
-                {/* Success icon */}
                 {isSubmitted && !error && <CheckIcon />}
               </InputAdornment>
             ),

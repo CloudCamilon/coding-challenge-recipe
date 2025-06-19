@@ -163,7 +163,7 @@ export default function RecipeCard({
               display={"inline-block"}
               fontWeight={600}
             >
-              {recipeCardData.date}
+              {`Date: ${recipeCardData.date}`}
             </Typography>
           </Box>
         </Box>

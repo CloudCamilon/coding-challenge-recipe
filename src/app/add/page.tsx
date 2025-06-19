@@ -8,7 +8,14 @@
 "use client";
 
 import { JSX, useEffect, useState } from "react";
-import { Box, Button, ThemeProvider, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Snackbar,
+  SnackbarCloseReason,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import Header from "@/components/Header";
 import { secBankTheme } from "@/styles/theme";
 import {
@@ -25,8 +32,21 @@ import Link from "next/link";
 import { TAddRecipeFormSubmit, TRecipe } from "@/models/recipe";
 import { addRecipe, deleteRecipe, updateRecipe } from "@/store/recipeSlice";
 import { AppDispatch } from "@/store/store";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { TToast } from "@/models/add";
+import { CheckIcon } from "../../../public/icons";
+import { useRouter } from "next/navigation";
 
+/**
+ * This function serves as the functional component
+ * for the Add Recipe page. UI component for creating,
+ * editing, and deleting recipes.
+ *
+ * @returns {JSX.Element}
+ * @throws Does not throw but handles errors via UI
+ */
 export default function AddRecipePage({}: {}): JSX.Element {
+  const router = useRouter();
   const navigationData = useSelector((state: any) => state.navigation.data);
   const {
     register,
@@ -49,6 +69,11 @@ export default function AddRecipePage({}: {}): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
 
   const [recipeData, setRecipeData] = useState<TRecipe | undefined>(undefined);
+  const [toastData, setToastData] = useState<TToast>({
+    showToast: false,
+    toastContent: "",
+    isError: false,
+  });
 
   useEffect(() => {
     if (navigationData) {
@@ -72,22 +97,27 @@ export default function AddRecipePage({}: {}): JSX.Element {
   }, [dispatch]);
 
   const onSubmit = async (formData: TAddRecipeFormSubmit) => {
-    console.log(formData.image);
+    const baseDate = new Date();
     if (recipeData) {
       const updatedRecipe = {
         ...formData,
+        date: `${baseDate.toLocaleString("default", {
+          month: "long",
+        })} ${baseDate.getDate()}, ${baseDate.getFullYear()}`,
         id: recipeData.id,
       };
-
       try {
         await dispatch(updateRecipe(updatedRecipe));
-        alert("✅ Recipe updated!");
+        setToastData({
+          showToast: true,
+          toastContent: "Recipe updated!",
+          isError: false,
+        });
       } catch (err) {
         console.error(err);
       }
     } else {
       const { title, image, ...rest } = formData;
-
       try {
         const response = await fetch("/api/save-image", {
           method: "POST",
@@ -96,9 +126,7 @@ export default function AddRecipePage({}: {}): JSX.Element {
           },
           body: JSON.stringify({ title, imageData: image }),
         });
-
         const result = await response.json();
-
         if (!response.ok) {
           setError("image", {
             type: "manual",
@@ -106,26 +134,39 @@ export default function AddRecipePage({}: {}): JSX.Element {
           });
           return;
         }
-
         const recipeToSave = {
           ...rest,
           title,
           image: result.path,
-          date: new Date().toISOString(),
+          date: `${baseDate.toLocaleString("default", {
+            month: "long",
+          })} ${baseDate.getDate()}, ${baseDate.getFullYear()}`,
           isFavorite: false,
         };
-
         await dispatch(addRecipe(recipeToSave)).unwrap();
-        alert(" Recipe added!");
+        setToastData({
+          showToast: true,
+          toastContent: "Recipe successfully created!",
+          isError: false,
+        });
       } catch (err: any) {
         console.log(err);
+        setToastData({
+          showToast: true,
+          toastContent: "A recipe with that title already exists.",
+          isError: true,
+        });
         if (err === "A recipe with that title already exists.") {
           setError("title", {
             type: "manual",
             message: err,
           });
         } else {
-          alert(" Failed to save recipe");
+          setToastData({
+            showToast: true,
+            toastContent: "Failed to save recipe!",
+            isError: true,
+          });
         }
       }
     }
@@ -134,14 +175,67 @@ export default function AddRecipePage({}: {}): JSX.Element {
   const handleDelete = async () => {
     try {
       await dispatch(deleteRecipe(recipeData?.id ?? -1));
-      alert("✅ Recipe deleted!");
+      setToastData({
+        showToast: true,
+        toastContent: "Recipe deleted!",
+        isError: false,
+      });
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleClose = (
+    _event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToastData((oldToastData) => ({
+      ...oldToastData,
+      showToast: false,
+    }));
+    if (!toastData.isError) {
+      router.push("/");
+    }
+  };
+
+  const snackBarContent = (): JSX.Element => {
+    return (
+      <Box
+        sx={{
+          width: "400px",
+          background: "white",
+          padding: 3,
+          borderRadius: 5,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 3,
+          color: "black",
+        }}
+      >
+        {toastData.toastContent}
+        {toastData.isError ? (
+          <CancelIcon sx={{ color: "#d32f2f", width: 20, height: 20 }} />
+        ) : (
+          <CheckIcon />
+        )}
+      </Box>
+    );
+  };
+
   return (
     <ThemeProvider theme={secBankTheme}>
+      <Snackbar
+        onClose={handleClose}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={toastData.showToast}
+      >
+        {snackBarContent()}
+      </Snackbar>
       <Box>
         <Header />
         <Box
@@ -180,7 +274,11 @@ export default function AddRecipePage({}: {}): JSX.Element {
                 height: { lg: "401px", xs: "250px" },
               }}
             >
-              <AddRecipeImage register={register} name="image" />
+              <AddRecipeImage
+                register={register}
+                name="image"
+                imageSrc={recipeData?.image ?? undefined}
+              />
             </Box>
             {errors.image && (
               <Typography color="error">Image is required</Typography>
